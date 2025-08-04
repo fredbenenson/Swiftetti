@@ -6,6 +6,14 @@ A customizable, high-performance confetti animation library for SwiftUI with rea
 ![Platform](https://img.shields.io/badge/platform-iOS%2017.0%2B-blue.svg)
 ![License](https://img.shields.io/badge/license-MIT-green.svg)
 
+## Demo
+
+<p align="center">
+  <img src="Images/Default.gif" width="250" alt="Default Preset">
+  <img src="Images/Celebration.gif" width="250" alt="Celebration Preset">
+  <img src="Images/Settings.gif" width="250" alt="Custom Settings">
+</p>
+
 ## Features
 
 ✨ **Realistic Physics** - Gravity, drag, mass, and wobble effects  
