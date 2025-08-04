@@ -1,4 +1,4 @@
-# Swiftetti 🎊
+# Swiftetti: The Maximum SwiftUI Confetti Library 🎊
 
 A customizable, high-performance confetti animation library for SwiftUI with realistic physics and metallic effects.
 
@@ -246,12 +246,24 @@ if let url = Bundle.main.url(forResource: "MyCustomConfetti", withExtension: "js
 
 **Note:** The exported JSON excludes the `colorPalette` property since colors aren't easily serializable. You'll need to set colors separately in code.
 
-## Performance Tips
+## Performance Considerations
 
-- Limit `maxTotalParticles` for older devices
-- Disable metallic effects if not needed
-- Use smaller particle counts for frequent triggers
-- Consider using `.subtle()` preset for background effects
+### ⚠️ Particle Count Warning
+
+**Important:** Using more than 200 particles can cause performance issues on current iOS devices. The library allows higher counts, but be aware:
+
+- **200+ particles**: May cause frame drops and stuttering animations
+- **500+ particles**: Likely to cause significant lag on most devices
+- **Recommended**: Keep `particleCount` under 150 for smooth performance
+
+### Optimization Tips
+
+- **Device Testing**: Always test on real devices, not just simulators
+- **Limit `maxTotalParticles`**: This prevents performance degradation when multiple bursts overlap
+- **Disable metallic effects**: Turn off `metallicEnabled` if not needed (adds GPU overhead)
+- **Use smaller particle counts**: For frequent triggers (e.g., game achievements)
+- **Consider presets**: The `.subtle()` preset is optimized for performance
+- **Reduce particle size range**: Smaller particles render faster
 
 ## Requirements
 
