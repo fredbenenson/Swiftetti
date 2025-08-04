@@ -281,7 +281,7 @@ Contributions are welcome! Please feel free to submit a Pull Request.
 
 ## Credits
 
-Made by [Fred Benenson](http://fredbenenson.com)
+Created by [Fred Benenson](http://fredbenenson.com)
 <br>
 hi@fredbenenson.com
 <br>
