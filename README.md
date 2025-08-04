@@ -8,10 +8,25 @@ A customizable, high-performance confetti animation library for SwiftUI with rea
 
 ## Demo
 
+### Default Preset
+Clean and elegant confetti animation perfect for any celebration moment.
+
 <p align="center">
-  <img src="Images/Default.gif" width="250" alt="Default Preset">
-  <img src="Images/Celebration.gif" width="250" alt="Celebration Preset">
-  <img src="Images/Settings.gif" width="250" alt="Custom Settings">
+  <img src="Images/Default.gif" width="300" alt="Default Preset">
+</p>
+
+### Celebration Preset
+Explosive burst of colorful particles for those extra special moments.
+
+<p align="center">
+  <img src="Images/Celebration.gif" width="300" alt="Celebration Preset">
+</p>
+
+### Custom Settings
+Fine-tune every aspect of the animation with the interactive settings panel.
+
+<p align="center">
+  <img src="Images/Settings.gif" width="300" alt="Custom Settings">
 </p>
 
 ## Features
@@ -199,6 +214,37 @@ settings.colorPalette = [.white.opacity(0.8)]
 
 SwiftettiView(trigger: $trigger, settings: settings)
 ```
+
+## Exporting Settings
+
+### Copy to JSON
+
+The Settings panel includes a "Copy JSON" button that exports your current configuration to the clipboard as JSON. This is useful for:
+
+1. **Saving custom configurations** - Experiment with settings visually, then export them
+2. **Sharing presets** - Send your custom configurations to other developers
+3. **Storing in your app** - Save the JSON in your app's Resources folder for reuse
+
+#### How to Use Exported Settings
+
+1. Use the Settings panel to customize your confetti animation
+2. Tap "Copy JSON" to copy the configuration to clipboard
+3. Save the JSON to a file (e.g., `Resources/MyCustomConfetti.json`)
+4. Load it in your app:
+
+```swift
+// Load from Resources
+if let url = Bundle.main.url(forResource: "MyCustomConfetti", withExtension: "json"),
+   let data = try? Data(contentsOf: url) {
+    let decoder = JSONDecoder()
+    if let settings = try? decoder.decode(SwiftettiSettings.self, from: data) {
+        // Use your custom settings
+        SwiftettiView(trigger: $showConfetti, settings: settings)
+    }
+}
+```
+
+**Note:** The exported JSON excludes the `colorPalette` property since colors aren't easily serializable. You'll need to set colors separately in code.
 
 ## Performance Tips
 
