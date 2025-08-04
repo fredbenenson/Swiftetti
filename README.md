@@ -96,22 +96,60 @@ SwiftettiView(
 
 ### SwiftettiSettings Properties
 
+#### Particle Emission
 | Property | Type | Default | Description |
 |----------|------|---------|-------------|
 | `particleCount` | Int | 150 | Number of particles per burst |
 | `maxTotalParticles` | Int | 500 | Performance limit for concurrent particles |
+
+#### Burst Physics
+| Property | Type | Default | Description |
+|----------|------|---------|-------------|
+| `burstSpeedMin` | Double | 2000 | Minimum initial velocity |
+| `burstSpeedMax` | Double | 10000 | Maximum initial velocity |
+| `upwardBias` | Double | 120 | Upward velocity boost |
+| `burstDirection` | Double | 270 | Direction in degrees (270 = upward) |
+| `burstX` | Double | 0.5 | Horizontal position (0-1, 0.5 = center) |
+| `burstY` | Double | 400 | Vertical position in pixels from top |
+
+#### Physics
+| Property | Type | Default | Description |
+|----------|------|---------|-------------|
 | `gravity` | Double | 1000 | Downward acceleration |
-| `burstSpeedMin/Max` | Double | 2000/10000 | Initial velocity range |
-| `sizeMin/Max` | CGFloat | 2/20 | Particle size range |
-| `metallicEnabled` | Bool | false | Enable metallic effects |
-| `colorPalette` | [Color] | White/Silver | Colors to use |
+| `massMin` | Double | 0.5 | Minimum particle mass |
+| `massMax` | Double | 1.5 | Maximum particle mass |
+| `dragMin` | Double | 0.8 | Minimum air resistance |
+| `dragMax` | Double | 1.2 | Maximum air resistance |
+| `fallDurationBase` | Double | 2.0 | Base fall duration in seconds |
 
-### Physics Properties
+#### Wobble Effects
+| Property | Type | Default | Description |
+|----------|------|---------|-------------|
+| `wobbleAmplitudeMin` | Double | 5 | Minimum side-to-side movement |
+| `wobbleAmplitudeMax` | Double | 15 | Maximum side-to-side movement |
+| `wobbleFrequencyMin` | Double | 2 | Minimum wobble frequency |
+| `wobbleFrequencyMax` | Double | 5 | Maximum wobble frequency |
+| `wobbleDecay` | Double | 1.0 | Rate of wobble reduction over time |
 
-- **Mass** (`massMin/Max`) - Affects fall speed
-- **Drag** (`dragMin/Max`) - Air resistance
-- **Wobble** (`wobbleAmplitudeMin/Max`) - Side-to-side movement
-- **Rotation** - 3D tumbling effects
+#### Appearance
+| Property | Type | Default | Description |
+|----------|------|---------|-------------|
+| `sizeMin` | CGFloat | 2 | Minimum particle size |
+| `sizeMax` | CGFloat | 20 | Maximum particle size |
+| `fadeStartPercent` | Double | 0.8 | When to start fading (0-1) |
+| `fadeDuration` | Double | 0.2 | Duration of fade animation |
+
+#### Metallic Effects
+| Property | Type | Default | Description |
+|----------|------|---------|-------------|
+| `metallicEnabled` | Bool | false | Enable metallic shine effects |
+| `metallicIntensity` | Double | 0.1 | Strength of metallic effect (0-1) |
+| `shimmerIntensity` | Double | 1.0 | Strength of shimmer animation (0-1) |
+
+#### Colors
+| Property | Type | Default | Description |
+|----------|------|---------|-------------|
+| `colorPalette` | [Color] | White/Silver | Array of colors to randomly select from |
 
 ## Examples
 
