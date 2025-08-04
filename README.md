@@ -281,6 +281,8 @@ Contributions are welcome! Please feel free to submit a Pull Request.
 
 ## Credits
 
-Created by Fred Benenson
-http://fredbenenson.com
+Made by [Fred Benenson](http://fredbenenson.com)
+<br>
+hi@fredbenenson.com
+<br>
 Inspired by celebration moments everywhere 🎊
