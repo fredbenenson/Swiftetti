@@ -1,4 +1,4 @@
-# Swiftetti: The Maximum SwiftUI Confetti Library 🎊
+# Swiftetti: The Maximum SwiftUI Confetti Library
 
 A customizable, high-performance confetti animation library for SwiftUI with realistic physics and metallic effects.
 
