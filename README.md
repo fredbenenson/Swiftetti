@@ -22,14 +22,14 @@ A customizable, high-performance confetti animation library for SwiftUI with rea
 Add Swiftetti to your project through Xcode:
 
 1. File → Add Package Dependencies
-2. Enter: `https://github.com/yourusername/Swiftetti`
+2. Enter: `https://github.com/fredbenenson/Swiftetti`
 3. Click Add Package
 
 Or add to your `Package.swift`:
 
 ```swift
 dependencies: [
-    .package(url: "https://github.com/yourusername/Swiftetti", from: "1.0.0")
+    .package(url: "https://github.com/fredbenenson/Swiftetti", from: "1.0.0")
 ]
 ```
 
@@ -177,5 +177,6 @@ Contributions are welcome! Please feel free to submit a Pull Request.
 
 ## Credits
 
-Created by [Your Name]  
+Created by Fred Benenson
+http://fredbenenson.com
 Inspired by celebration moments everywhere 🎊

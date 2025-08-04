@@ -9,7 +9,7 @@ public struct SwiftettiSettingsAccordion: View {
     @Binding public var isPresented: Bool
     @State private var testTrigger = false
     @State private var expandedSections: Set<String> = []
-    @State private var selectedMode: ConfettiMode = .regularCard
+    @State private var selectedMode: ConfettiMode = .default
     @State private var currentSettings = SwiftettiSettings.default()
     @State private var showCopiedAlert = false
     
@@ -20,8 +20,8 @@ public struct SwiftettiSettingsAccordion: View {
     }
     
     enum ConfettiMode: String, CaseIterable {
-        case regularCard = "Regular Card"
-        case roundOver = "Round Over"
+        case `default` = "Default"
+        case celebration = "Celebration"
     }
     
     public var body: some View {
@@ -37,9 +37,9 @@ public struct SwiftettiSettingsAccordion: View {
                     .pickerStyle(SegmentedPickerStyle())
                     .onChange(of: selectedMode) { newMode in
                         switch newMode {
-                        case .regularCard:
+                        case .default:
                             currentSettings = regularCardSettings
-                        case .roundOver:
+                        case .celebration:
                             currentSettings = roundOverSettings
                         }
                     }
@@ -134,9 +134,9 @@ public struct SwiftettiSettingsAccordion: View {
                         
                         Button("Reset") {
                             switch selectedMode {
-                            case .regularCard:
+                            case .default:
                                 currentSettings = SwiftettiSettings.default()
-                            case .roundOver:
+                            case .celebration:
                                 currentSettings = SwiftettiSettings.celebration()
                             }
                             updateBindings()
@@ -633,9 +633,9 @@ public struct SwiftettiSettingsAccordion: View {
     
     private func updateBindings() {
         switch selectedMode {
-        case .regularCard:
+        case .default:
             regularCardSettings = currentSettings
-        case .roundOver:
+        case .celebration:
             roundOverSettings = currentSettings
         }
     }
@@ -649,7 +649,7 @@ public struct SwiftettiSettingsAccordion: View {
             if let jsonString = String(data: jsonData, encoding: .utf8) {
                 #if os(iOS)
                 UIPasteboard.general.string = jsonString
-                let modeName = selectedMode == .regularCard ? "regularCard" : "roundOver"
+                let modeName = selectedMode == .default ? "default" : "celebration"
                 print("📋 Copied \(modeName) settings as JSON to clipboard")
                 withAnimation(.easeIn(duration: 0.3)) {
                     showCopiedAlert = true
@@ -663,9 +663,9 @@ public struct SwiftettiSettingsAccordion: View {
     
     func onAppear() {
         switch selectedMode {
-        case .regularCard:
+        case .default:
             currentSettings = regularCardSettings
-        case .roundOver:
+        case .celebration:
             currentSettings = roundOverSettings
         }
     }

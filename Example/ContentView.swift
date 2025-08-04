@@ -10,14 +10,7 @@ struct ContentView: View {
     
     enum PresetType: String, CaseIterable {
         case `default` = "Default"
-        case celebration = "Celebration" 
-        
-        var emoji: String {
-            switch self {
-            case .default: return "✨"
-            case .celebration: return "🎉"
-            }
-        }
+        case celebration = "Celebration"
     }
     
     var currentSettings: SwiftettiSettings {
@@ -47,38 +40,33 @@ struct ContentView: View {
                     Button(action: {
                         showConfetti = true
                     }) {
-                        HStack(spacing: 15) {
-                            Text("🎊")
-                                .font(.system(size: 60))
-                            Text("CONFETTI")
-                                .font(.system(size: 36, weight: .heavy, design: .rounded))
-                            Text("🎊")
-                                .font(.system(size: 60))
-                        }
-                        .foregroundColor(.white)
-                        .padding(.horizontal, 40)
-                        .padding(.vertical, 30)
-                        .background(
-                            LinearGradient(
-                                colors: [Color(hex: "667eea"), Color(hex: "764ba2")],
-                                startPoint: .topLeading,
-                                endPoint: .bottomTrailing
+                        Text("CONFETTI")
+                            .font(.system(size: 36, weight: .heavy, design: .rounded))
+                            .foregroundColor(.white)
+                            .padding(.horizontal, 60)
+                            .padding(.vertical, 30)
+                            .background(
+                                LinearGradient(
+                                    colors: [Color(hex: "667eea"), Color(hex: "764ba2")],
+                                    startPoint: .topLeading,
+                                    endPoint: .bottomTrailing
+                                )
                             )
-                        )
-                        .cornerRadius(30)
-                        .shadow(color: .black.opacity(0.3), radius: 20, x: 0, y: 10)
+                            .cornerRadius(30)
+                            .shadow(color: .black.opacity(0.3), radius: 20, x: 0, y: 10)
                     }
                     .scaleEffect(showConfetti ? 0.95 : 1.0)
                     .animation(.spring(response: 0.3, dampingFraction: 0.6), value: showConfetti)
                     
                     // Preset Selector
-                    VStack(alignment: .leading, spacing: 10) {
-                        Text("PRESET")
-                            .font(.caption)
-                            .foregroundColor(.white.opacity(0.7))
-                            .padding(.horizontal)
+                    VStack(spacing: 15) {
+                        Text("Preset")
+                            .font(.system(size: 14, weight: .medium, design: .rounded))
+                            .foregroundColor(.white.opacity(0.6))
+                            .textCase(.uppercase)
+                            .tracking(2)
                         
-                        HStack(spacing: 20) {
+                        HStack(spacing: 15) {
                             ForEach(PresetType.allCases, id: \.self) { preset in
                                 PresetButton(
                                     preset: preset,
@@ -89,7 +77,6 @@ struct ContentView: View {
                                 )
                             }
                         }
-                        .padding(.horizontal)
                     }
                     
                     // Settings Button
@@ -129,23 +116,18 @@ struct PresetButton: View {
     
     var body: some View {
         Button(action: action) {
-            VStack(spacing: 8) {
-                Text(preset.emoji)
-                    .font(.system(size: 30))
-                Text(preset.rawValue)
-                    .font(.caption)
-                    .fontWeight(.medium)
-            }
-            .foregroundColor(isSelected ? .white : .white.opacity(0.7))
-            .frame(width: 80, height: 80)
-            .background(
-                RoundedRectangle(cornerRadius: 15)
-                    .fill(isSelected ? Color(hex: "667eea") : Color.white.opacity(0.1))
-            )
-            .overlay(
-                RoundedRectangle(cornerRadius: 15)
-                    .stroke(isSelected ? Color.white.opacity(0.3) : Color.clear, lineWidth: 2)
-            )
+            Text(preset.rawValue)
+                .font(.system(size: 16, weight: .medium, design: .rounded))
+                .foregroundColor(isSelected ? .white : .white.opacity(0.7))
+                .frame(width: 120, height: 50)
+                .background(
+                    RoundedRectangle(cornerRadius: 15)
+                        .fill(isSelected ? Color(hex: "667eea") : Color.white.opacity(0.1))
+                )
+                .overlay(
+                    RoundedRectangle(cornerRadius: 15)
+                        .stroke(isSelected ? Color.white.opacity(0.3) : Color.clear, lineWidth: 2)
+                )
         }
     }
 }
