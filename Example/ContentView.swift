@@ -2,22 +2,20 @@ import SwiftUI
 import Swiftetti
 
 struct ContentView: View {
-    @State private var showConfetti = false
+    @State private var showDefaultConfetti = false
+    @State private var showFromTheTopConfetti = false
+    @State private var showCustomConfetti = false
     @State private var selectedPreset: PresetType = .default
     @State private var showSettings = false  
     @State private var defaultSettings = SwiftettiSettings.default()
-    @State private var celebrationSettings = SwiftettiSettings.celebration()
+    @State private var fromTheTopSettings = SwiftettiSettings.fromTheTop()
+    @State private var customSettings: SwiftettiSettings? = nil
+    @State private var jsonLoadStatus = ""
     
     enum PresetType: String, CaseIterable {
         case `default` = "Default"
-        case celebration = "Celebration"
-    }
-    
-    var currentSettings: SwiftettiSettings {
-        switch selectedPreset {
-        case .default: return defaultSettings
-        case .celebration: return celebrationSettings
-        }
+        case fromTheTop = "From the Top"
+        case custom = "Custom JSON"
     }
     
     var body: some View {
@@ -36,47 +34,47 @@ struct ContentView: View {
                     .shadow(radius: 10)
                 
                 VStack(spacing: 20) {
-                    // Big Confetti Button
-                    Button(action: {
-                        showConfetti = true
-                    }) {
-                        Text("CONFETTI")
-                            .font(.system(size: 36, weight: .heavy, design: .rounded))
-                            .foregroundColor(.white)
-                            .padding(.horizontal, 60)
-                            .padding(.vertical, 30)
-                            .background(
-                                LinearGradient(
-                                    colors: [Color(hex: "667eea"), Color(hex: "764ba2")],
-                                    startPoint: .topLeading,
-                                    endPoint: .bottomTrailing
-                                )
-                            )
-                            .cornerRadius(30)
-                            .shadow(color: .black.opacity(0.3), radius: 20, x: 0, y: 10)
-                    }
-                    .scaleEffect(showConfetti ? 0.95 : 1.0)
-                    .animation(.spring(response: 0.3, dampingFraction: 0.6), value: showConfetti)
-                    
-                    // Preset Selector
+                    // Preset Buttons
                     VStack(spacing: 15) {
-                        Text("Preset")
+                        Text("Tap to trigger confetti")
                             .font(.system(size: 14, weight: .medium, design: .rounded))
                             .foregroundColor(.white.opacity(0.6))
                             .textCase(.uppercase)
                             .tracking(2)
                         
-                        HStack(spacing: 15) {
+                        VStack(spacing: 12) {
                             ForEach(PresetType.allCases, id: \.self) { preset in
-                                PresetButton(
-                                    preset: preset,
-                                    isSelected: selectedPreset == preset,
-                                    action: {
-                                        selectedPreset = preset
+                                Button(action: {
+                                    selectedPreset = preset
+                                    switch preset {
+                                    case .default:
+                                        showDefaultConfetti = true
+                                    case .fromTheTop:
+                                        showFromTheTopConfetti = true
+                                    case .custom:
+                                        showCustomConfetti = true
                                     }
-                                )
+                                }) {
+                                    Text(preset.rawValue)
+                                        .font(.system(size: 20, weight: .semibold, design: .rounded))
+                                        .foregroundColor(.white)
+                                        .frame(maxWidth: .infinity)
+                                        .padding(.vertical, 20)
+                                        .background(
+                                            LinearGradient(
+                                                colors: selectedPreset == preset ? 
+                                                    [Color(hex: "667eea"), Color(hex: "764ba2")] :
+                                                    [Color.white.opacity(0.2), Color.white.opacity(0.15)],
+                                                startPoint: .topLeading,
+                                                endPoint: .bottomTrailing
+                                            )
+                                        )
+                                        .cornerRadius(20)
+                                        .shadow(color: .black.opacity(0.2), radius: 10, x: 0, y: 5)
+                                }
                             }
                         }
+                        .frame(maxWidth: 280)
                     }
                     
                     // Settings Button
@@ -93,41 +91,71 @@ struct ContentView: View {
             }
             .padding()
             
-            // Confetti Overlay
+            // Confetti Overlays
             SwiftettiView(
-                trigger: $showConfetti,
-                settings: currentSettings
+                trigger: $showDefaultConfetti,
+                settings: defaultSettings
+            )
+            SwiftettiView(
+                trigger: $showFromTheTopConfetti,
+                settings: fromTheTopSettings
+            )
+            SwiftettiView(
+                trigger: $showCustomConfetti,
+                settings: customSettings ?? SwiftettiSettings.default()
             )
         }
         .sheet(isPresented: $showSettings) {
             SwiftettiSettingsAccordion(
                 regularCardSettings: $defaultSettings,
-                roundOverSettings: $celebrationSettings,
+                fromTheTopSettings: $fromTheTopSettings,
                 isPresented: $showSettings
             )
         }
+        .onAppear {
+            // Try to load custom JSON on app launch
+            loadCustomJSON()
+        }
     }
-}
-
-struct PresetButton: View {
-    let preset: ContentView.PresetType
-    let isSelected: Bool
-    let action: () -> Void
     
-    var body: some View {
-        Button(action: action) {
-            Text(preset.rawValue)
-                .font(.system(size: 16, weight: .medium, design: .rounded))
-                .foregroundColor(isSelected ? .white : .white.opacity(0.7))
-                .frame(width: 120, height: 50)
-                .background(
-                    RoundedRectangle(cornerRadius: 15)
-                        .fill(isSelected ? Color(hex: "667eea") : Color.white.opacity(0.1))
-                )
-                .overlay(
-                    RoundedRectangle(cornerRadius: 15)
-                        .stroke(isSelected ? Color.white.opacity(0.3) : Color.clear, lineWidth: 2)
-                )
+    func loadCustomJSON() {
+        // First try to load from the Swiftetti package bundle (where it's actually located)
+        if let settings = SwiftettiSettings.loadFromJSON(filename: "custom") {
+            customSettings = settings
+            jsonLoadStatus = "✅ Loaded custom.json"
+            print("Successfully loaded custom JSON from Swiftetti bundle")
+            return
+        }
+        
+        // Fallback: try to load from filesystem for development
+        let examplePath = #file
+            .components(separatedBy: "/")
+            .dropLast() // Remove ContentView.swift
+            .joined(separator: "/")
+        
+        let customPath = "\(examplePath)/SwiftettiSettings"
+        
+        if let settings = SwiftettiSettings.loadFromJSON(
+            filename: "custom",
+            bundle: .main,
+            customPaths: [customPath]
+        ) {
+            customSettings = settings
+            jsonLoadStatus = "✅ Loaded custom.json (dev)"
+            print("Successfully loaded custom JSON from filesystem: \(customPath)")
+        } else {
+            // Create a custom preset programmatically as fallback
+            var settings = SwiftettiSettings()
+            settings.particleCount = 75
+            settings.maxTotalParticles = 300
+            settings.burstSpeedMin = 1500
+            settings.burstSpeedMax = 4000
+            settings.metallicEnabled = true
+            settings.metallicIntensity = 0.6
+            settings.shimmerIntensity = 0.8
+            customSettings = settings
+            jsonLoadStatus = "📝 Using fallback custom"
+            print("Using fallback custom settings")
         }
     }
 }

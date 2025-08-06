@@ -100,7 +100,7 @@ public struct SwiftettiView: View {
 
 public enum SwiftettiPreset {
     case `default`
-    case celebration
+    case fromTheTop
     case subtle
     case gold
     case rainbow
@@ -109,8 +109,8 @@ public enum SwiftettiPreset {
         switch self {
         case .default:
             return .default()
-        case .celebration:
-            return .celebration()
+        case .fromTheTop:
+            return .fromTheTop()
         case .subtle:
             return .subtle()
         case .gold:

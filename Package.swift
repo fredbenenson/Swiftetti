@@ -17,7 +17,10 @@ let package = Package(
     targets: [
         .target(
             name: "Swiftetti",
-            dependencies: []),
+            dependencies: [],
+            resources: [
+                .copy("Resources/SwiftettiSettings")
+            ]),
         .testTarget(
             name: "SwiftettiTests",
             dependencies: ["Swiftetti"]),

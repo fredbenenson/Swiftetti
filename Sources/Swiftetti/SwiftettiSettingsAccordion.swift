@@ -5,7 +5,7 @@ import UIKit
 
 public struct SwiftettiSettingsAccordion: View {
     @Binding public var regularCardSettings: SwiftettiSettings
-    @Binding public var roundOverSettings: SwiftettiSettings
+    @Binding public var fromTheTopSettings: SwiftettiSettings
     @Binding public var isPresented: Bool
     @State private var testTrigger = false
     @State private var expandedSections: Set<String> = []
@@ -13,15 +13,15 @@ public struct SwiftettiSettingsAccordion: View {
     @State private var currentSettings = SwiftettiSettings.default()
     @State private var showCopiedAlert = false
     
-    public init(regularCardSettings: Binding<SwiftettiSettings>, roundOverSettings: Binding<SwiftettiSettings>, isPresented: Binding<Bool>) {
+    public init(regularCardSettings: Binding<SwiftettiSettings>, fromTheTopSettings: Binding<SwiftettiSettings>, isPresented: Binding<Bool>) {
         self._regularCardSettings = regularCardSettings
-        self._roundOverSettings = roundOverSettings
+        self._fromTheTopSettings = fromTheTopSettings
         self._isPresented = isPresented
     }
     
     enum ConfettiMode: String, CaseIterable {
         case `default` = "Default"
-        case celebration = "Celebration"
+        case fromTheTop = "From the Top"
     }
     
     public var body: some View {
@@ -39,8 +39,8 @@ public struct SwiftettiSettingsAccordion: View {
                         switch newMode {
                         case .default:
                             currentSettings = regularCardSettings
-                        case .celebration:
-                            currentSettings = roundOverSettings
+                        case .fromTheTop:
+                            currentSettings = fromTheTopSettings
                         }
                     }
                 }
@@ -136,8 +136,8 @@ public struct SwiftettiSettingsAccordion: View {
                             switch selectedMode {
                             case .default:
                                 currentSettings = SwiftettiSettings.default()
-                            case .celebration:
-                                currentSettings = SwiftettiSettings.celebration()
+                            case .fromTheTop:
+                                currentSettings = SwiftettiSettings.fromTheTop()
                             }
                             updateBindings()
                         }
@@ -150,14 +150,25 @@ public struct SwiftettiSettingsAccordion: View {
                 }
             }
             .navigationTitle("Confetti Settings")
+            #if os(iOS)
             .navigationBarTitleDisplayMode(.inline)
+            #endif
             .toolbar {
+                #if os(iOS)
                 ToolbarItem(placement: .navigationBarTrailing) {
                     Button("Done") {
                         updateBindings()
                         isPresented = false
                     }
                 }
+                #else
+                ToolbarItem(placement: .cancellationAction) {
+                    Button("Done") {
+                        updateBindings()
+                        isPresented = false
+                    }
+                }
+                #endif
             }
         }
         .overlay(alignment: .bottom) {
@@ -635,29 +646,89 @@ public struct SwiftettiSettingsAccordion: View {
         switch selectedMode {
         case .default:
             regularCardSettings = currentSettings
-        case .celebration:
-            roundOverSettings = currentSettings
+        case .fromTheTop:
+            fromTheTopSettings = currentSettings
         }
     }
     
     private func copySettingsAsJSON() {
-        let encoder = JSONEncoder()
-        encoder.outputFormatting = [.prettyPrinted, .sortedKeys]
+        // Create a copy with hex colors for JSON export
+        var settingsWithColors = currentSettings
         
-        do {
-            let jsonData = try encoder.encode(currentSettings)
-            if let jsonString = String(data: jsonData, encoding: .utf8) {
-                #if os(iOS)
-                UIPasteboard.general.string = jsonString
-                let modeName = selectedMode == .default ? "default" : "celebration"
-                print("📋 Copied \(modeName) settings as JSON to clipboard")
-                withAnimation(.easeIn(duration: 0.3)) {
-                    showCopiedAlert = true
+        // Convert current color palette to hex strings for JSON export
+        let hexColors = currentSettings.colorPalette.map { color -> String in
+            // Convert Color to hex string
+            #if os(iOS)
+            let uiColor = UIColor(color)
+            var red: CGFloat = 0
+            var green: CGFloat = 0
+            var blue: CGFloat = 0
+            var alpha: CGFloat = 0
+            
+            uiColor.getRed(&red, green: &green, blue: &blue, alpha: &alpha)
+            
+            let r = Int(red * 255)
+            let g = Int(green * 255)
+            let b = Int(blue * 255)
+            
+            return String(format: "#%02X%02X%02X", r, g, b)
+            #else
+            // For macOS or other platforms, return a default hex color
+            // In a real implementation, you'd convert NSColor
+            return "#FFFFFF"
+            #endif
+        }
+        
+        // Use reflection to set the private colorHexStrings property for encoding
+        let mirror = Mirror(reflecting: settingsWithColors)
+        if let child = mirror.children.first(where: { $0.label == "colorHexStrings" }) {
+            // This is a workaround since we can't directly set private properties
+            // Instead, we'll create a new settings object from JSON
+            var jsonDict: [String: Any] = [
+                "particleCount": settingsWithColors.particleCount,
+                "maxTotalParticles": settingsWithColors.maxTotalParticles,
+                "burstSpeedMin": settingsWithColors.burstSpeedMin,
+                "burstSpeedMax": settingsWithColors.burstSpeedMax,
+                "upwardBias": settingsWithColors.upwardBias,
+                "burstDirection": settingsWithColors.burstDirection,
+                "burstX": settingsWithColors.burstX,
+                "burstY": settingsWithColors.burstY,
+                "gravity": settingsWithColors.gravity,
+                "massMin": settingsWithColors.massMin,
+                "massMax": settingsWithColors.massMax,
+                "dragMin": settingsWithColors.dragMin,
+                "dragMax": settingsWithColors.dragMax,
+                "fallDurationBase": settingsWithColors.fallDurationBase,
+                "wobbleAmplitudeMin": settingsWithColors.wobbleAmplitudeMin,
+                "wobbleAmplitudeMax": settingsWithColors.wobbleAmplitudeMax,
+                "wobbleFrequencyMin": settingsWithColors.wobbleFrequencyMin,
+                "wobbleFrequencyMax": settingsWithColors.wobbleFrequencyMax,
+                "wobbleDecay": settingsWithColors.wobbleDecay,
+                "sizeMin": settingsWithColors.sizeMin,
+                "sizeMax": settingsWithColors.sizeMax,
+                "fadeStartPercent": settingsWithColors.fadeStartPercent,
+                "fadeDuration": settingsWithColors.fadeDuration,
+                "metallicEnabled": settingsWithColors.metallicEnabled,
+                "metallicIntensity": settingsWithColors.metallicIntensity,
+                "shimmerIntensity": settingsWithColors.shimmerIntensity,
+                "colors": hexColors
+            ]
+            
+            do {
+                let jsonData = try JSONSerialization.data(withJSONObject: jsonDict, options: [.prettyPrinted, .sortedKeys])
+                if let jsonString = String(data: jsonData, encoding: .utf8) {
+                    #if os(iOS)
+                    UIPasteboard.general.string = jsonString
+                    let modeName = selectedMode == .default ? "default" : "fromTheTop"
+                    print("📋 Copied \(modeName) settings as JSON to clipboard (with colors)")
+                    withAnimation(.easeIn(duration: 0.3)) {
+                        showCopiedAlert = true
+                    }
+                    #endif
                 }
-                #endif
+            } catch {
+                print("Failed to encode settings: \(error)")
             }
-        } catch {
-            print("Failed to encode settings: \(error)")
         }
     }
     
@@ -665,8 +736,8 @@ public struct SwiftettiSettingsAccordion: View {
         switch selectedMode {
         case .default:
             currentSettings = regularCardSettings
-        case .celebration:
-            currentSettings = roundOverSettings
+        case .fromTheTop:
+            currentSettings = fromTheTopSettings
         }
     }
 }
